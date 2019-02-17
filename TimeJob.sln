@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeJob", "TimeJob\TimeJob.csproj", "{2CBD1D9C-CFE2-4C5B-B762-200EAF1AD323}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2CBD1D9C-CFE2-4C5B-B762-200EAF1AD323}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CBD1D9C-CFE2-4C5B-B762-200EAF1AD323}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CBD1D9C-CFE2-4C5B-B762-200EAF1AD323}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CBD1D9C-CFE2-4C5B-B762-200EAF1AD323}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D44256F1-197F-490F-8E0F-71C556F5474C}
+	EndGlobalSection
+EndGlobal
