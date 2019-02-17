@@ -5,8 +5,116 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeJob"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="{x:Null}"
+        Width="720"
+		Height="540" 
+        MinWidth="720" 
+        MinHeight="405"
+        MaxWidth="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Width}"
+        MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}"
+        WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Scrollerbar.xaml"/>
+                <ResourceDictionary Source="Styles/Button.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Background="#232323">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="120"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" MouseLeftButtonDown="DragWindow">
+            <Label Foreground="White" Content="{Binding testModel.title}" VerticalAlignment="Top" FontSize="20" Margin="0,10,0,0"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                <Button Style="{StaticResource CommonButton}" Margin="0,0,10,0" Height="20" Width="20" Foreground="White" Click="minimizeWindow">–</Button>
+                <Button Style="{StaticResource CommonButton}" Margin="0,0,10,0" Height="20" Width="20" Foreground="White" Click="maximizeWindow">□</Button>
+                <Button Style="{StaticResource CommonButton}" Margin="0,0,10,0" Height="20" Width="20" Foreground="White" Click="closeWindow">×</Button>
+            </StackPanel>
+        </Grid>
+        <!--<Button  Grid.Row="1" Padding="5" Content="Show" Foreground="White" FontSize="20" Command="{Binding Path=testBtnCommand}"/>-->
+
+        <!--應用程式列表-->
+        <ListView Grid.Row="1" Margin="0,10" Background="Transparent" BorderBrush="Transparent" 
+                      ItemsSource="{Binding Path=processesData}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      x:Name="processListView">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Margin="0,6" >
+                        <Image Margin="12,0" Height="18" Width="18" Source="{Binding bitmapSource}"/>
+                        <Button Command="{Binding ElementName=processListView, Path=DataContext.ProcessCommand}"
+                                    CommandParameter="{Binding Path=processModel}">Test Click</Button>
+                        <TextBlock Foreground="White" VerticalAlignment="Center" Text="PID: " />
+                        <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding id}" FontWeight="Bold" />
+                        <TextBlock Foreground="White" VerticalAlignment="Center" Text=",Name: " />
+                        <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding name}" FontWeight="Bold" />
+                        <TextBlock Foreground="White" VerticalAlignment="Center" Text=", Path: " Visibility="{Binding Path=showPath, Converter={StaticResource BoolToVisConverter}}" />
+                        <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding path}" TextDecorations="Underline" Cursor="Hand" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <!--StackPanel Orientation="Horizontal">
+                        <Button Padding="5" Content="Show" Foreground="White" FontSize="20" Background="Transparent" Command="{Binding Path=testBtnCommand}"/>
+                        <Button Margin="10,0,0,0" Padding="5" Content="Change" Foreground="White" FontSize="20" Background="Transparent" Command="{Binding Path=testBtnCommand}"/>
+                    </StackPanel>-->
+
+        <!--排程列表-->
+        <ListView Grid.Row="2" Padding="10,10,0,0" Background="#141414" BorderBrush="Transparent" ItemsSource="{Binding Path=processesSelectData}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                       PreviewMouseWheel="ListBox_PreviewMouseWheel">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate  >
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Height="80" Width="120" Background="White" Margin="0,0,5,0">
+                        <Button Width="18" Height="18" HorizontalAlignment="Right" Foreground="White" FontSize="8" VerticalAlignment="Top" Style="{StaticResource CornerButton}" >X</Button>
+                        <TextBlock Foreground="Black" VerticalAlignment="Center" Text="{Binding name}" FontWeight="Bold" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Thumb x:Name="thumbTop" Height="5" VerticalAlignment="Top" Background="Red" Margin="15,0"
+				Grid.RowSpan="2" Cursor="SizeNS" Opacity="0"
+               PreviewMouseLeftButtonDown="thumb_PreviewMouseLeftButtonDown"/>
+        <Thumb x:Name="thumbTopRight" HorizontalAlignment="Right" Height="15" VerticalAlignment="Top"
+				Width="15" Background="Green" Grid.RowSpan="2" Cursor="SizeNESW" Opacity="0"
+               PreviewMouseLeftButtonDown="thumb_PreviewMouseLeftButtonDown"/>
+        <Thumb x:Name="thumbRight" HorizontalAlignment="Right" Margin="0,15" Width="5" Background="Red"
+				Grid.RowSpan="2" Cursor="SizeWE" Opacity="0"
+               PreviewMouseLeftButtonDown="thumb_PreviewMouseLeftButtonDown"/>
+        <Thumb x:Name="thumbBottomRight" HorizontalAlignment="Right" Height="15" VerticalAlignment="Bottom"
+				Width="15" Background="Green" Grid.RowSpan="2" Cursor="SizeNWSE" Opacity="0" 
+               PreviewMouseLeftButtonDown="thumb_PreviewMouseLeftButtonDown"/>
+        <Thumb x:Name="thumbBottom" Height="5" Margin="15,0" VerticalAlignment="Bottom" Background="Red"
+				Grid.RowSpan="2" Cursor="SizeNS" Opacity="0"
+               PreviewMouseLeftButtonDown="thumb_PreviewMouseLeftButtonDown"/>
+        <Thumb x:Name="thumbBottomLeft" HorizontalAlignment="Left" Height="15" VerticalAlignment="Bottom"
+				Width="15" Background="Green" Grid.RowSpan="2" Cursor="SizeNESW" Opacity="0" 
+               PreviewMouseLeftButtonDown="thumb_PreviewMouseLeftButtonDown"/>
+        <Thumb x:Name="thumbLeft" HorizontalAlignment="Left" Margin="0,15" Width="5" Background="Red"
+				Grid.RowSpan="2" Cursor="SizeWE" Opacity="0" 
+               PreviewMouseLeftButtonDown="thumb_PreviewMouseLeftButtonDown"/>
+        <Thumb x:Name="thumbTopLeft" HorizontalAlignment="Left" Height="15" VerticalAlignment="Top"
+				Width="15" Background="Green" Grid.RowSpan="2" Cursor="SizeNWSE" Opacity="0" 
+               PreviewMouseLeftButtonDown="thumb_PreviewMouseLeftButtonDown"/>
     </Grid>
 </Window>
