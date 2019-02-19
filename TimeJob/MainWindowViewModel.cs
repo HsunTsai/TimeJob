@@ -17,7 +17,7 @@ namespace TimeJob
 {
     class MainWindowViewModel : INotifyPropertyChanged
     {
-        private ICommand clickProcess, removeScehduleProcess;
+        private ICommand clickProcessTimer, clickProcessAlarmClock, removeScehduleProcess;
 
         public ObservableCollection<ProcessModel> processes = new ObservableCollection<ProcessModel>();
         public ObservableCollection<ProcessModel> processesData { get { return processes; } }
@@ -58,23 +58,36 @@ namespace TimeJob
             }
         }
 
-        public ICommand ClickProcess
+        public ICommand ClickProcessTimer
         {
             get
             {
-                return clickProcess ?? (clickProcess = new RelayCommand(x =>
+                return clickProcessTimer ?? (clickProcessTimer = new RelayCommand(x =>
                 {
-                    addProcessToSchedule(x as ProcessModel);
+                    addProcessToSchedule(x as ProcessModel, ProcessModel.Schedule.TIMER);
                 }));
             }
         }
 
-        private void addProcessToSchedule(ProcessModel processModel)
+        public ICommand ClickProcessAlarmClock
+        {
+            get
+            {
+                return clickProcessAlarmClock ?? (clickProcessAlarmClock = new RelayCommand(x =>
+                {
+                    addProcessToSchedule(x as ProcessModel, ProcessModel.Schedule.ALARM_CLOCK);
+                }));
+            }
+        }
+
+
+
+        private void addProcessToSchedule(ProcessModel processModel, ProcessModel.Schedule scheduleType)
         {
             foreach (ProcessModel selectProcessModel in processesSelect)
                 if (processModel.id == selectProcessModel.id) return;
 
-            processModel.schedule = true;
+            processModel.schedule = scheduleType;
             processesSelect.Add(processModel);
             //MessageBox.Show(processModel.name + " element clicked");
         }
@@ -92,7 +105,7 @@ namespace TimeJob
 
         private void removeProcess(ProcessModel processModel)
         {
-            processModel.schedule = false;
+            processModel.schedule = ProcessModel.Schedule.STOP;
             processesSelect.Remove(processModel);
             //MessageBox.Show(processModel.name + " element clicked");
         }

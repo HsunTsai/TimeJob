@@ -12,15 +12,26 @@ namespace TimeJob.Models
     class ProcessModel : INotifyPropertyChanged
     {
         private Timer timer;
+        private Schedule _schedule;
+
+        public enum Schedule
+        {
+            UNSET,
+            STOP,
+            ALARM_CLOCK,
+            TIMER
+        }
 
         public ProcessModel(Process value)
         {
             process = value;
             id = value.Id;
             name = value.MainWindowTitle;
-            time = 1000;
+            time = 30;
+            _schedule = Schedule.UNSET;
             responding = value.Responding; //Status
             memory = value.PrivateMemorySize64; //Memory (private working set in Bytes)
+            
             try
             {
                 if (null != value.MainModule)
@@ -39,21 +50,30 @@ namespace TimeJob.Models
         public int id { get; set; }
         public string name { get; set; }
         public bool responding { get; set; }
-        public bool schedule
+        public Schedule schedule
         {
-            get { return schedule; }
+            get { return _schedule; }
             set
             {
-                if (value)
+                if (_schedule == Schedule.UNSET)
                 {
-                    timer = new Timer(interval: 1000);
-                    timer.Elapsed += (new ElapsedEventHandler(setTimeCountDown));
-                    timer.Start();
+                    switch (value)
+                    {
+                        case Schedule.ALARM_CLOCK:
+                            break;
+                        case Schedule.TIMER:
+                            timer = new Timer(interval: 1000);
+                            timer.Elapsed += (new ElapsedEventHandler(setTimeCountDown));
+                            timer.Start();
+                            break;
+                    }
+                    _schedule = value;
                 }
-                else
+                else if (value == Schedule.STOP)
                 {
+                    _schedule = Schedule.UNSET;
                     if (null != timer) timer.Stop();
-                    time = 1000;
+                    time = 30;
                 }
             }
         }
