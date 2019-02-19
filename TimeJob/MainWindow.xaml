@@ -29,7 +29,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid Background="#232323">
+    <Grid Background="#303030">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -49,27 +49,43 @@
         <!--<Button  Grid.Row="1" Padding="5" Content="Show" Foreground="White" FontSize="20" Command="{Binding Path=testBtnCommand}"/>-->
 
         <!--應用程式列表-->
-        <ListView Grid.Row="1" Margin="0,10" Background="Transparent" BorderBrush="Transparent" 
+        <StackPanel Grid.Row="1" Margin="0,10">
+            <TextBlock Margin="12,0"  Foreground="White" >應用程式列表</TextBlock>
+            <ListView  Background="Transparent" BorderBrush="Transparent" 
                       ItemsSource="{Binding Path=processesData}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                       x:Name="processListView">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal" Margin="0,6" >
-                        <Image Margin="12,0" Height="18" Width="18" Source="{Binding bitmapSource}"/>
-                        <Button Command="{Binding ElementName=processListView, Path=DataContext.ProcessCommand}"
-                                    CommandParameter="{Binding Path=processModel}">Test Click</Button>
-                        <TextBlock Foreground="White" VerticalAlignment="Center" Text="PID: " />
-                        <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding id}" FontWeight="Bold" />
-                        <TextBlock Foreground="White" VerticalAlignment="Center" Text=",Name: " />
-                        <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding name}" FontWeight="Bold" />
-                        <TextBlock Foreground="White" VerticalAlignment="Center" Text=", Path: " Visibility="{Binding Path=showPath, Converter={StaticResource BoolToVisConverter}}" />
-                        <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding path}" TextDecorations="Underline" Cursor="Hand" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Background="#404040" Margin="6,6,12,0">
+                            <WrapPanel Background="#232323">
+                                <WrapPanel Margin="6" Height="14" Width="14" Background="#404040"/>
+                            </WrapPanel>
+                            <Grid Margin="0" Height="50">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Image Grid.Column="0" Margin="6" Height="24" Width="24" Source="{Binding bitmapSource}"/>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <TextBlock Foreground="White" VerticalAlignment="Center" Text="PID: " />
+                                    <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding id}" FontWeight="Bold" />
+                                    <TextBlock Foreground="White" VerticalAlignment="Center" Text=",Name: " />
+                                    <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding name}" FontWeight="Bold" />
+                                    <TextBlock Foreground="White" VerticalAlignment="Center" Text=", Path: " Visibility="{Binding Path=showPath, Converter={StaticResource BoolToVisConverter}}" />
+                                    <TextBlock Foreground="White" VerticalAlignment="Center" Text="{Binding path}" TextDecorations="Underline" Cursor="Hand" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                </StackPanel>
+                                <Button Grid.Column="2"
+                                    Command="{Binding ElementName=processListView, Path=DataContext.ClickProcess}"
+                                            CommandParameter="{Binding Path=processModel}">Test Click</Button>
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
 
         <!--StackPanel Orientation="Horizontal">
                         <Button Padding="5" Content="Show" Foreground="White" FontSize="20" Background="Transparent" Command="{Binding Path=testBtnCommand}"/>
@@ -77,9 +93,9 @@
                     </StackPanel>-->
 
         <!--排程列表-->
-        <ListView Grid.Row="2" Padding="10,10,0,0" Background="#141414" BorderBrush="Transparent" ItemsSource="{Binding Path=processesSelectData}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                       PreviewMouseWheel="ListBox_PreviewMouseWheel">
+        <ListView x:Name="selectProcessListView" Grid.Row="2" Padding="10,5,0,0" Background="#141414" BorderBrush="Transparent" ItemsSource="{Binding Path=processesSelectData}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                  PreviewMouseWheel="ListBox_PreviewMouseWheel">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"/>
@@ -87,9 +103,24 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Height="80" Width="120" Background="White" Margin="0,0,5,0">
-                        <Button Width="18" Height="18" HorizontalAlignment="Right" Foreground="White" FontSize="8" VerticalAlignment="Top" Style="{StaticResource CornerButton}" >X</Button>
-                        <TextBlock Foreground="Black" VerticalAlignment="Center" Text="{Binding name}" FontWeight="Bold" />
+                    <Grid Height="90" Width="120" Background="#232323" Margin="0,0,5,0">
+                        <Button Width="18" Height="18" HorizontalAlignment="Right" Foreground="White" FontSize="8" VerticalAlignment="Top" Style="{StaticResource CornerButton}" 
+                                Command="{Binding ElementName=selectProcessListView, Path=DataContext.RemoveScehduleProcess}"
+                                CommandParameter="{Binding Path=processModel}">X</Button>
+                        <TextBlock Foreground="#11FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   FontSize="30"
+                                   Text="{Binding id}" FontWeight="Bold" />
+                        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <StackPanel>
+                                <Image Margin="0,6,0,0" Height="30" Width="30" Source="{Binding bitmapSource}"/>
+                                <TextBlock Foreground="White" HorizontalAlignment="Center"
+                                     TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                     Padding="6,6,6,0"  FontSize="15" Text="{Binding name}"/>
+                                <TextBlock Foreground="White" HorizontalAlignment="Center"
+                                     TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                     Padding="6,0,6,0"  FontSize="12" Text="{Binding time}"/>
+                            </StackPanel>
+                        </WrapPanel>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

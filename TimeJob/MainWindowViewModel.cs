@@ -10,12 +10,14 @@ using TimeJob.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
 using System.Threading;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace TimeJob
 {
     class MainWindowViewModel : INotifyPropertyChanged
     {
-        private ICommand processCommand;
+        private ICommand clickProcess, removeScehduleProcess;
 
         public ObservableCollection<ProcessModel> processes = new ObservableCollection<ProcessModel>();
         public ObservableCollection<ProcessModel> processesData { get { return processes; } }
@@ -48,57 +50,51 @@ namespace TimeJob
             {
                 if (process.MainWindowTitle.Length > 0)
                 {
-                    ProcessModel processModel = new ProcessModel();
-                    processModel.id = process.Id;
-                    processModel.name = process.MainWindowTitle;
-                    processModel.responding = process.Responding; //Status
-                    processModel.memory = process.PrivateMemorySize64; //Memory (private working set in Bytes)
-                    try
-                    {
-                        if (null != process.MainModule)
-                        {
-                            processModel.path = process.MainModule.FileName;
-                            processModel.bitmapSource = bitmapToBitmapSource(Icon.ExtractAssociatedIcon(processModel.path).ToBitmap());
-                            processModel.bitmapSource.Freeze();
-                        }
-                    }
-                    catch
-                    {
-
-                    }
-
                     Application.Current.Dispatcher.BeginInvoke((Action)delegate ()
                     {
-                        processes.Add(processModel);
+                        processes.Add(new ProcessModel(process));
                     });
                 }
             }
         }
 
-        public ICommand ProcessCommand
+        public ICommand ClickProcess
         {
             get
             {
-                return processCommand ?? (processCommand = new RelayCommand(x =>
+                return clickProcess ?? (clickProcess = new RelayCommand(x =>
                 {
-                    DoStuff(x as ProcessModel);
+                    addProcessToSchedule(x as ProcessModel);
                 }));
             }
         }
 
-        private void DoStuff(ProcessModel processModel)
+        private void addProcessToSchedule(ProcessModel processModel)
         {
+            foreach (ProcessModel selectProcessModel in processesSelect)
+                if (processModel.id == selectProcessModel.id) return;
+
+            processModel.schedule = true;
             processesSelect.Add(processModel);
             //MessageBox.Show(processModel.name + " element clicked");
         }
 
-        public static BitmapSource bitmapToBitmapSource(Bitmap source)
+        public ICommand RemoveScehduleProcess
         {
-            return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                          source.GetHbitmap(),
-                          IntPtr.Zero,
-                          Int32Rect.Empty,
-                          BitmapSizeOptions.FromEmptyOptions());
+            get
+            {
+                return removeScehduleProcess ?? (removeScehduleProcess = new RelayCommand(x =>
+                {
+                    removeProcess(x as ProcessModel);
+                }));
+            }
+        }
+
+        private void removeProcess(ProcessModel processModel)
+        {
+            processModel.schedule = false;
+            processesSelect.Remove(processModel);
+            //MessageBox.Show(processModel.name + " element clicked");
         }
 
         private void RaisePropertyChanged(string propertyName)
