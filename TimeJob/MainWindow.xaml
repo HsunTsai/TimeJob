@@ -72,7 +72,7 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Image Grid.Column="0" Margin="16" Height="24" Width="24" Source="Images/app.png"/>
+                                <!--<Image Grid.Column="0" Margin="16" Height="24" Width="24" Source="Images/app.png"/>-->
                                 <Image Grid.Column="0" Margin="16" Height="24" Width="24" Source="{Binding bitmapSource}"/>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal">

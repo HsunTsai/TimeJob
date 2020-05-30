@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
+using System.Management;
 using System.Timers;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -31,19 +33,19 @@ namespace TimeJob.Models
             _schedule = Schedule.UNSET;
             responding = value.Responding; //Status
             memory = value.PrivateMemorySize64; //Memory (private working set in Bytes)
-            
+
             try
             {
-                if (null != value.MainModule)
-                {
-                    path = value.MainModule.FileName;
-                    bitmapSource = bitmapToBitmapSource(Icon.ExtractAssociatedIcon(processModel.path).ToBitmap());
-                    bitmapSource.Freeze();
-                }
+                path = value.MainModule.FileName;
+                bitmapSource = bitmapToBitmapSource(Icon.ExtractAssociatedIcon(processModel.path).ToBitmap());
             }
             catch
             {
-
+                bitmapSource = new BitmapImage(new Uri("pack://application:,,,/Images/app.png", UriKind.Absolute));
+            }
+            finally
+            {
+                bitmapSource.Freeze();
             }
         }
 
@@ -99,6 +101,23 @@ namespace TimeJob.Models
         {
             time -= 1;
             RaisePropertyChanged("time");
+        }
+
+        private string GetMainModuleFilepath(int processId)
+        {
+            string wmiQueryString = "SELECT ProcessId, ExecutablePath FROM Win32_Process WHERE ProcessId = " + processId;
+            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+            {
+                using (var results = searcher.Get())
+                {
+                    ManagementObject mo = results.Cast<ManagementObject>().FirstOrDefault();
+                    if (mo != null)
+                    {
+                        return (string)mo["ExecutablePath"];
+                    }
+                }
+            }
+            return null;
         }
 
         private void RaisePropertyChanged(string propertyName)
